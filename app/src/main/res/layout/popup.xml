@@ -48,7 +48,7 @@
                 android:onClick="addName"
                 android:text="+" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/Name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="number"
         android:hint="Amount" />
 
     <EditText
@@ -83,6 +83,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Price" />
+        android:inputType="number"
+        android:hint="numberDecimal" />
 </LinearLayout>

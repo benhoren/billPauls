@@ -2,6 +2,7 @@ package com.benapp.anull.bill;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
@@ -11,10 +12,12 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -80,9 +83,36 @@ public class MainActivity extends AppCompatActivity {
 
     LinearLayout poptpLayout = null;
 
+    private void ss(){
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+//                .setView(v)
+                .setTitle("hello")
+                .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        // TODO Do something
+
+                        //Dismiss once everything is OK.
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+        dialog.show();
+    }
+
     private void bulidPopUp(){
         alertDialogBuilder = new AlertDialog.Builder(this);
-
         poptpLayout = new LinearLayout(this);
 
         popupcreate();
@@ -95,16 +125,18 @@ public class MainActivity extends AppCompatActivity {
 
 
         poptpLayout.addView(popup);
+
+
+
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(poptpLayout);
 
-
+        dropdown();
 
 
         // set dialog message
-        alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setCancelable(true).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
 
                 View child;
                 ArrayList<String> names = new ArrayList<String>();
@@ -115,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     names.add(tv.getText().toString());
                 }
 
-                String n = ((EditText)poptpLayout.findViewById(R.id.Name)).getText().toString();
+                String n = ((AutoCompleteTextView)poptpLayout.findViewById(R.id.Name)).getText().toString();
                 if(!n.isEmpty())
                     names.add(n);
 
@@ -137,13 +169,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    void fun(){
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
-        AutoCompleteTextView textView = (AutoCompleteTextView)
-                findViewById(R.id.countries_list);
-        textView.setAdapter(adapter);
+    String[] nameList;
+    ArrayList <String> namesforList = new ArrayList <String>();
+
+    public void dropdown(){
+        nameList = new String[namesforList.size()];
+        for (int i=0; i<nameList.length; i++){
+           nameList[i] = namesforList.get(i);
+        }
+        creatAutotxt();
     }
+
+
+    void creatAutotxt(){
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_expandable_list_item_1, nameList);
+        final AutoCompleteTextView textView = (AutoCompleteTextView)
+                poptpLayout.findViewById(R.id.Name);
+        textView.setAdapter(adapter);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {}}, 500);
+
+        textView.setThreshold(1);
+        textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus){
+                    textView.showDropDown();
+                }
+            }
+        });
+        textView.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event){
+                textView.showDropDown();
+                return false;
+            }
+        });
+    }
+
+
 
 
 
@@ -158,6 +225,13 @@ public class MainActivity extends AppCompatActivity {
         TextView fo = (TextView) child.findViewById(R.id.textView);
         fo.setText(n);
 
+        for(int i=0; i<namesforList.size(); i++){
+            if(namesforList.get(i).equals(n)){
+                namesforList.remove(i);
+                dropdown();
+                break;
+            }
+        }
         items.addView(child);
     }
 
@@ -179,6 +253,9 @@ public class MainActivity extends AppCompatActivity {
                 String[] newf = {names.get(j),""+ priceforone};
                 friends.add(newf);
                 friendIndex = friends.size()-1;
+
+                for(int k=0; k<friends.size(); k++)
+                    namesforList.add(friends.get(k)[0]);
             }
 
             else {
