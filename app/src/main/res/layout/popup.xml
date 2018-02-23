@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <Button
+            <InageButton
                 android:id="@+id/button"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
@@ -46,7 +46,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:onClick="addName"
-                android:text="+" />
+                android:adjustViewBounds="true"
+                android:src="@drawable/addname"
+                android:scaleType="centerInside"
+
+                 />
 
             <AutoCompleteTextView
                 android:id="@+id/Name"
@@ -86,3 +90,92 @@
         android:inputType="textPersonName"
         android:hint="Price" />
 </LinearLayout>
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/popupid"-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@drawable/popupback">-->
+
+
+    <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+
+        <!--&gt;-->
+
+        <!--<HorizontalScrollView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content">-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/tinynames"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal">-->
+
+
+
+            <!--</LinearLayout>-->
+        <!--</HorizontalScrollView>-->
+    <!--</FrameLayout>-->
+
+    <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
+
+            <!--<ImageButton-->
+                <!--android:id="@+id/button"-->
+                <!--android:layout_width="65dp"-->
+                <!--android:layout_height="45dp"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:background="@drawable/addname"-->
+                <!--android:onClick="addName" />-->
+
+            <!--<AutoCompleteTextView-->
+                <!--android:id="@+id/Name"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentStart="true"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:layout_toStartOf="@+id/button"-->
+                <!--android:ems="10"-->
+                <!--android:hint="Name"-->
+                <!--android:inputType="textPersonName" />-->
+        <!--</RelativeLayout>-->
+
+    <!--</FrameLayout>-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/Description"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:hint="Description" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/Amount"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:hint="Amount" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/Price"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:hint="Price" />-->
+<!--</LinearLayout>-->

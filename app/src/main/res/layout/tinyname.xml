@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/textView"
+            android:onClick="removeTintyName"
             android:text="X" />
 
     </RelativeLayout>

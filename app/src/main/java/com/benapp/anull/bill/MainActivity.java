@@ -1,22 +1,27 @@
 package com.benapp.anull.bill;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -24,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -68,7 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
 //        DachClick();
 //        HomeClick();
+        dd();
         bulidPage();
+        changePage(false);
         bulidAlertOne();
         bulidPopUp();
 
@@ -84,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                     (ViewGroup) findViewById(R.id.popupid));
         }
     }
-
 
 
 
@@ -320,6 +327,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void removeTintyName(View view){
+        RelativeLayout parent = (RelativeLayout) view.getParent();
+
+        TextView tv = parent.findViewById(R.id.textView);
+        FrameLayout fl =(FrameLayout) parent.getParent();
+        LinearLayout items = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
+
+        items.removeView(fl);
+//        fl.getLayoutParams();
+
+
+    }
 
     public void addName(View view){
         LinearLayout items = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
@@ -510,12 +529,29 @@ public class MainActivity extends AppCompatActivity {
     protected void changePage(boolean summ){
         FrameLayout frame = (FrameLayout) findViewById(R.id.content);
         if(summ){
-            frame.removeView(homepage);
-            frame.addView(summarypage);
+            try {
+                frame.removeView(homepage);
+                frame.addView(summarypage);
+            }catch (Exception e){}
         }
         if(!summ){
+            try{
             frame.removeView(summarypage);
             frame.addView(homepage);
+            }catch (Exception e){}
+        }
+    }
+
+    public void dd() {
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+        for (int i = 0; i < menuView.getChildCount(); i++) {
+            final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
+            final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
+            final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 42, displayMetrics);
+            layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 42, displayMetrics);
+            iconView.setLayoutParams(layoutParams);
         }
     }
 
