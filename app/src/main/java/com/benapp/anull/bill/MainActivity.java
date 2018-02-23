@@ -1,6 +1,7 @@
 package com.benapp.anull.bill;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -9,12 +10,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Layout;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -31,7 +34,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
-    private AlertDialog.Builder alertDialogBuilder;
+    private AlertDialog alertDialogBuilder;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -40,10 +43,12 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    HomeClick();
+//                    HomeClick();
+                    changePage(false);
                     return true;
                 case R.id.navigation_dashboard:
-                    DachClick();
+//                    DachClick();
+                    changePage(true);
                     return true;
 //                case R.id.navigation_notifications:
 //                    mTextMessage.setText(R.string.title_notifications);
@@ -61,10 +66,12 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        DachClick();
-        HomeClick();
+//        DachClick();
+//        HomeClick();
+        bulidPage();
+        bulidAlertOne();
         bulidPopUp();
-//        popupcreate();
+
     }
 
     View popup =null;
@@ -83,90 +90,146 @@ public class MainActivity extends AppCompatActivity {
 
     LinearLayout poptpLayout = null;
 
-    private void ss(){
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-//                .setView(v)
-                .setTitle("hello")
+
+    private void bulidAlertOne(){
+        alertDialogBuilder = new AlertDialog.Builder(this)
                 .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
+        alertDialogBuilder.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
 
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                Button button = ((AlertDialog) alertDialogBuilder).getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
-                        // TODO Do something
 
-                        //Dismiss once everything is OK.
-                        dialog.dismiss();
+                        ArrayList<String> names =getlilist();
+
+
+                        String n = ((AutoCompleteTextView)poptpLayout.findViewById(R.id.Name)).getText().toString();
+                        n=n.trim();
+
+                        if(!n.isEmpty())
+                            names.add(n);
+
+                        String d = ((EditText)poptpLayout.findViewById(R.id.Description)).getText().toString();
+                        String a = ((EditText)poptpLayout.findViewById(R.id.Amount)).getText().toString();
+                        String p = ((EditText)poptpLayout.findViewById(R.id.Price)).getText().toString();
+
+
+                        d=d.trim();
+                        a=a.trim();
+                        p=p.trim();
+
+                        boolean ok = true;
+
+                        if(names.size()==0)
+                            ok=false;
+
+
+                        try{
+                            Double.parseDouble(a);
+                            ((EditText)poptpLayout.findViewById(R.id.Amount)).setTextColor(Color.BLACK);
+                        } catch (Exception e){ok=false;
+                            ((EditText)poptpLayout.findViewById(R.id.Amount)).setTextColor(Color.RED);}
+
+                        try{
+                            Double.parseDouble(p);
+                            ((EditText)poptpLayout.findViewById(R.id.Price)).setTextColor(Color.BLACK);
+                        } catch (Exception e){ok=false;
+                            ((EditText)poptpLayout.findViewById(R.id.Price)).setTextColor(Color.RED);}
+
+
+
+                        if(ok) {
+                            addItem(names, d, a, p);
+
+                            int am = Integer.parseInt(a);
+                            double pr = Double.parseDouble(p);
+
+                            refreshSummary(names, d, am, pr);
+
+                            //Dismiss once everything is OK.
+                            alertDialogBuilder.dismiss();
+                            bulidAlertOne();
+                            bulidPopUp();
+
+                        }
                     }
                 });
             }
         });
-        dialog.show();
     }
 
     private void bulidPopUp(){
-        alertDialogBuilder = new AlertDialog.Builder(this);
+
         poptpLayout = new LinearLayout(this);
 
         popupcreate();
-
         LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
-
         final View popup = inflater.inflate(R.layout.popup,
                     (ViewGroup) findViewById(R.id.popupid));
-
-
-
         poptpLayout.addView(popup);
 
-
-
-        // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(poptpLayout);
-
         dropdown();
 
 
-        // set dialog message
-        alertDialogBuilder.setCancelable(true).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
 
-                View child;
-                ArrayList<String> names = new ArrayList<String>();
-                LinearLayout namescroll = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
-                for(int i=0; i<namescroll.getChildCount(); i++){
-                    child = namescroll.getChildAt(i);
-                    TextView tv = (TextView) child.findViewById(R.id.textView);
-                    names.add(tv.getText().toString());
-                }
+        final EditText a = (EditText)poptpLayout.findViewById(R.id.Amount);
+        final EditText p = (EditText)poptpLayout.findViewById(R.id.Price);
 
-                String n = ((AutoCompleteTextView)poptpLayout.findViewById(R.id.Name)).getText().toString();
-                if(!n.isEmpty())
-                    names.add(n);
 
-                String d = ((EditText)poptpLayout.findViewById(R.id.Description)).getText().toString();
-                String a = ((EditText)poptpLayout.findViewById(R.id.Amount)).getText().toString();
-                String p = ((EditText)poptpLayout.findViewById(R.id.Price)).getText().toString();
 
-                addItem(names,d,a,p);
+        a.addTextChangedListener(new TextWatcher() {
 
-                int am = Integer.parseInt(a);
-                double pr = Double.parseDouble(p);
-
-                refreshSummary(names,d,am,pr);
-
-                bulidPopUp();
+            public void afterTextChanged(Editable s) {
+                try{
+                    Double.parseDouble(a.getText().toString().trim());
+                    a.setTextColor(Color.BLACK);
+                } catch (Exception e){
+                    a.setTextColor(Color.RED);}
             }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
+        p.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {
+                try{
+                    Double.parseDouble(p.getText().toString().trim());
+                    p.setTextColor(Color.BLACK);
+                } catch (Exception e){
+                    p.setTextColor(Color.RED);}
+            }
+
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+
     }
+
+    private ArrayList<String> getlilist(){
+        ArrayList<String> names = new ArrayList<String>();
+        View child;
+        LinearLayout namescroll = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
+        for(int i=0; i<namescroll.getChildCount(); i++){
+            child = namescroll.getChildAt(i);
+            TextView tv = (TextView) child.findViewById(R.id.textView);
+            names.add(tv.getText().toString().trim());
+        }
+        return names;
+    }
+
 
 
     String[] nameList;
@@ -177,6 +240,10 @@ public class MainActivity extends AppCompatActivity {
         for (int i=0; i<nameList.length; i++){
            nameList[i] = namesforList.get(i);
         }
+
+        Log.d("Ben", "nameLists: "+nameList.length);
+        Log.d("Ben", "friends: "+friends.size());
+        Log.d("Ben", "namesforList: "+namesforList.size());
         creatAutotxt();
     }
 
@@ -187,6 +254,18 @@ public class MainActivity extends AppCompatActivity {
         final AutoCompleteTextView textView = (AutoCompleteTextView)
                 poptpLayout.findViewById(R.id.Name);
         textView.setAdapter(adapter);
+
+        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View arg1, int position, long arg3) {
+                String item = (String) parent.getItemAtPosition(position);
+                addNameToTiny(item);
+
+            }
+        });
+
+
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -210,8 +289,36 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void addNameToTiny(String name){
+        boolean newname = true;
+        ArrayList <String> lillidt = getlilist();
 
+        String n = name;
+        for (int i=0; i<lillidt.size(); i++){
+            if (lillidt.get(i).equals(n))
+                newname = false;
+        }
+        LinearLayout items = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
 
+        View child = getLayoutInflater().inflate(R.layout.tinyname, null);
+
+        if(!n.isEmpty() && newname) {
+
+            ((EditText) poptpLayout.findViewById(R.id.Name)).setText("");
+            TextView fo = (TextView) child.findViewById(R.id.textView);
+            fo.setText(n);
+
+            for (int i = 0; i < namesforList.size(); i++) {
+                if (namesforList.get(i).equals(n)) {
+                    namesforList.remove(i);
+                    dropdown();
+                    break;
+                }
+            }
+            items.addView(child);
+        }
+
+    }
 
 
     public void addName(View view){
@@ -220,19 +327,31 @@ public class MainActivity extends AppCompatActivity {
         View child = getLayoutInflater().inflate(R.layout.tinyname, null);
 
         String n = ((EditText)poptpLayout.findViewById(R.id.Name)).getText().toString();
+        n=n.trim();
+        boolean newname = true;
+        ArrayList <String> lillidt = getlilist();
 
-        ((EditText)poptpLayout.findViewById(R.id.Name)).setText("");
-        TextView fo = (TextView) child.findViewById(R.id.textView);
-        fo.setText(n);
-
-        for(int i=0; i<namesforList.size(); i++){
-            if(namesforList.get(i).equals(n)){
-                namesforList.remove(i);
-                dropdown();
-                break;
-            }
+        for (int i=0; i<lillidt.size(); i++){
+            if (lillidt.get(i).equals(n))
+                newname = false;
         }
-        items.addView(child);
+
+
+        if(!n.isEmpty() && newname) {
+
+            ((EditText) poptpLayout.findViewById(R.id.Name)).setText("");
+            TextView fo = (TextView) child.findViewById(R.id.textView);
+            fo.setText(n);
+
+            for (int i = 0; i < namesforList.size(); i++) {
+                if (namesforList.get(i).equals(n)) {
+                    namesforList.remove(i);
+                    dropdown();
+                    break;
+                }
+            }
+            items.addView(child);
+        }
     }
 
 
@@ -248,14 +367,16 @@ public class MainActivity extends AppCompatActivity {
                     i = friends.size();;
                 }
             }
-
             if (friendIndex == -1) {
-                String[] newf = {names.get(j),""+ priceforone};
+                String[] newf = {names.get(j), "" + priceforone};
                 friends.add(newf);
-                friendIndex = friends.size()-1;
+                friendIndex = friends.size() - 1;
 
-                for(int k=0; k<friends.size(); k++)
-                    namesforList.add(friends.get(k)[0]);
+                nameList = new String[namesforList.size()];
+                for (int i = 0; i < nameList.length; i++) {
+                    nameList[i] = namesforList.get(i);
+                }
+
             }
 
             else {
@@ -295,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
         if(friendIndex == items.getChildCount()) {
             View child = getLayoutInflater().inflate(R.layout.friend, null);
 
-            Log.d("Ben", "here" + friendIndex);
+
             TextView n = (TextView) child.findViewById(R.id.name);
             TextView s = (TextView) child.findViewById(R.id.sum);
 
@@ -326,18 +447,26 @@ public class MainActivity extends AppCompatActivity {
     private void addItem(ArrayList<String> names,String description , String amount, String price){
         LinearLayout items = (LinearLayout) findViewById(R.id.itemContainer);
 
-        View child = getLayoutInflater().inflate(R.layout.item, null);
+        View child = getLayoutInflater().inflate(R.layout.nitem, null);
 
         TextView f = (TextView) child.findViewById(R.id.first);
         TextView s = (TextView) child.findViewById(R.id.second);
         TextView t = (TextView) child.findViewById(R.id.third);
         TextView fo = (TextView) child.findViewById(R.id.four);
         String name="";
-        for(int i=0; i<names.size(); i++){
-            name+=names.get(i);
+
+        f.setText(names.get(0));
+
+        for(int i=1; i<names.size(); i++){
+           TextView na = new TextView(this);
+            na.setText(", "+names.get(i));
+            na.setTextSize(18);
+
+            LinearLayout itmnm = child.findViewById(R.id.itemname);
+            itmnm.addView(na);
         }
 
-        f.setText(name);
+
         s.setText(description);
         t.setText(amount);
         fo.setText(price);
@@ -345,67 +474,101 @@ public class MainActivity extends AppCompatActivity {
         String count =  ""+items.getChildCount();
 
         items.addView(child);
-        Log.d("Ben","add item");
-        Log.d("Ben","size: "+count);
+//        Log.d("Ben","add item");
+//        Log.d("Ben","size: "+count);
     }
 
 
     public void addItem(View view){
-
         // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
         // show it
-        alertDialog.show();
+
+        namesforList = new ArrayList<String>();
+        for(int i=0; i<friends.size(); i++)
+            namesforList.add(friends.get(i)[0]);
+
+        alertDialogBuilder.show();
+
+        dropdown();
     }
 
 
-
-
     View summarypage =null;
-    protected void DachClick() {
-
-        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
-        removeOld(frame);
-
+    View homepage =null;
+    protected void bulidPage(){
         if(summarypage == null) {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
             summarypage = inflater.inflate(R.layout.summary,
                     (ViewGroup) findViewById(R.id.summaryid));
         }
-        frame.addView(summarypage);
-
-    }
-
-    View homepage =null;
-    protected void HomeClick() {
-        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
-        removeOld(frame);
-
-        LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
-
         if(homepage == null) {
+            LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
             homepage = inflater.inflate(R.layout.additem,
                     (ViewGroup) findViewById(R.id.additemid));
         }
-        frame.addView(homepage);
+    }
+    protected void changePage(boolean summ){
+        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
+        if(summ){
+            frame.removeView(homepage);
+            frame.addView(summarypage);
+        }
+        if(!summ){
+            frame.removeView(summarypage);
+            frame.addView(homepage);
+        }
     }
 
-    private void removeOld(FrameLayout frame){
-        try{
-            LayoutInflater oldinflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View oldchildLayout = oldinflater.inflate(R.layout.summary,
-                    (ViewGroup) findViewById(R.id.summaryid));
-            frame.removeView(oldchildLayout);
-        }catch(Exception e){}
 
-        try {
-            LayoutInflater oldinflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View oldchildLayout = oldinflater.inflate(R.layout.additem,
-                    (ViewGroup) findViewById(R.id.additemid));
-            frame.removeView(oldchildLayout);
-        }catch(Exception e){}
 
-    }
+//    View summarypage =null;
+//    protected void DachClick() {
+//
+//        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
+//        removeOld(frame);
+//
+//        if(summarypage == null) {
+//            LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+//            summarypage = inflater.inflate(R.layout.summary,
+//                    (ViewGroup) findViewById(R.id.summaryid));
+//        }
+//        frame.addView(summarypage);
+//    }
+//
+//    View homepage =null;
+//    protected void HomeClick() {
+//        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
+//        removeOld(frame);
+//
+//        LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
+//
+//        if(homepage == null) {
+//            homepage = inflater.inflate(R.layout.additem,
+//                    (ViewGroup) findViewById(R.id.additemid));
+//        }
+//        frame.addView(homepage);
+//    }
+//
+//    /**
+//     * remove old child from main frame
+//     * @param frame
+//     */
+//    private void removeOld(FrameLayout frame){
+//        try{
+//            LayoutInflater oldinflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
+//            View oldchildLayout = oldinflater.inflate(R.layout.summary,
+//                    (ViewGroup) findViewById(R.id.summaryid));
+//            frame.removeView(oldchildLayout);
+//        }catch(Exception e){}
+//
+//        try {
+//            LayoutInflater oldinflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+//            View oldchildLayout = oldinflater.inflate(R.layout.additem,
+//                    (ViewGroup) findViewById(R.id.additemid));
+//            frame.removeView(oldchildLayout);
+//        }catch(Exception e){}
+//
+//    }
 
 
 }
