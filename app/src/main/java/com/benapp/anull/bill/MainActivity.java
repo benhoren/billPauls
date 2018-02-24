@@ -74,12 +74,11 @@ public class MainActivity extends AppCompatActivity {
 
 //        DachClick();
 //        HomeClick();
-        dd();
+        resizeIcons();
         bulidPage();
         changePage(false);
         bulidAlertOne();
         bulidPopUp();
-
     }
 
     View popup =null;
@@ -98,11 +97,13 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout poptpLayout = null;
 
 
+
     private void bulidAlertOne(){
         alertDialogBuilder = new AlertDialog.Builder(this)
                 .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
+
 
         alertDialogBuilder.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -158,13 +159,13 @@ public class MainActivity extends AppCompatActivity {
                             int am = Integer.parseInt(a);
                             double pr = Double.parseDouble(p);
 
-                            refreshSummary(names, d, am, pr);
+                            refreshFriendsList(names, d, am, pr);
 
                             //Dismiss once everything is OK.
                             alertDialogBuilder.dismiss();
-                            bulidAlertOne();
+                            updateSummrayScreen();
+//                            bulidAlertOne();
                             bulidPopUp();
-
                         }
                     }
                 });
@@ -172,9 +173,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * build the pop up
+     */
     private void bulidPopUp(){
 
         poptpLayout = new LinearLayout(this);
+
+
 
         popupcreate();
         LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -182,10 +188,9 @@ public class MainActivity extends AppCompatActivity {
                     (ViewGroup) findViewById(R.id.popupid));
         poptpLayout.addView(popup);
 
+
         alertDialogBuilder.setView(poptpLayout);
         dropdown();
-
-
 
         final EditText a = (EditText)poptpLayout.findViewById(R.id.Amount);
         final EditText p = (EditText)poptpLayout.findViewById(R.id.Price);
@@ -225,6 +230,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * get the tiny names from pop-up
+     * @return list with tiny -names
+     */
     private ArrayList<String> getlilist(){
         ArrayList<String> names = new ArrayList<String>();
         View child;
@@ -242,6 +251,9 @@ public class MainActivity extends AppCompatActivity {
     String[] nameList;
     ArrayList <String> namesforList = new ArrayList <String>();
 
+    /**
+     * update the list of the autocomplete
+     */
     public void dropdown(){
         nameList = new String[namesforList.size()];
         for (int i=0; i<nameList.length; i++){
@@ -255,6 +267,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * create the autoComplete list
+     */
     void creatAutotxt(){
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_expandable_list_item_1, nameList);
@@ -271,9 +286,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {}}, 500);
@@ -296,6 +308,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * add name to tiny if item was selected from autoComplete
+     * @param name
+     */
     private void addNameToTiny(String name){
         boolean newname = true;
         ArrayList <String> lillidt = getlilist();
@@ -327,20 +343,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void removeTintyName(View view){
-        RelativeLayout parent = (RelativeLayout) view.getParent();
-
-        TextView tv = parent.findViewById(R.id.textView);
-        FrameLayout fl =(FrameLayout) parent.getParent();
-        LinearLayout items = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
-
-        items.removeView(fl);
-//        fl.getLayoutParams();
 
 
-    }
-
-    public void addName(View view){
+    /**
+     * add tiny name when '+' button in popup clicked.
+     * @param view
+     */
+    public void addTinyName(View view){
         LinearLayout items = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
 
         View child = getLayoutInflater().inflate(R.layout.tinyname, null);
@@ -354,7 +363,6 @@ public class MainActivity extends AppCompatActivity {
             if (lillidt.get(i).equals(n))
                 newname = false;
         }
-
 
         if(!n.isEmpty() && newname) {
 
@@ -372,9 +380,31 @@ public class MainActivity extends AppCompatActivity {
             items.addView(child);
         }
     }
+    /**
+     * remove tiny name when 'x' button clicked in pop up.
+     * @param view
+     */
+    public void removeTintyName(View view){
+        RelativeLayout parent = (RelativeLayout) view.getParent();
+
+        TextView tv = parent.findViewById(R.id.textView);
+        FrameLayout fl =(FrameLayout) parent.getParent();
+        LinearLayout items = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
+
+        items.removeView(fl);
+//        fl.getLayoutParams();
+    }
 
 
-    void refreshSummary(ArrayList<String> names, String desc, int amount, double price) {
+    ArrayList<String[]> friends = new ArrayList<String[]>();
+    /**
+     * update Friends list after a change (what pop-up closed.)
+     * @param names
+     * @param desc
+     * @param amount
+     * @param price
+     */
+    void refreshFriendsList(ArrayList<String> names, String desc, int amount, double price) {
         int friendIndex = -1;
 
         double priceforone =(((double)amount) * price)/(names.size());
@@ -404,11 +434,14 @@ public class MainActivity extends AppCompatActivity {
                 friends.get(friendIndex)[1] = newp;
             }
             friendIndex=-1;
-//            updateSummrayScreen(friendIndex);
+
         }
-        updateSummrayScreen();
     }
 
+
+    /**
+     * update summary frame - by the friends List.
+     */
     void updateSummrayScreen(){
         LinearLayout items = (LinearLayout) summarypage.findViewById(R.id.friendsContainer);
 
@@ -428,41 +461,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void updateSummrayScreen(int friendIndex){
-
-        LinearLayout items = (LinearLayout) summarypage.findViewById(R.id.friendsContainer);
-
-        if(friendIndex == items.getChildCount()) {
-            View child = getLayoutInflater().inflate(R.layout.friend, null);
 
 
-            TextView n = (TextView) child.findViewById(R.id.name);
-            TextView s = (TextView) child.findViewById(R.id.sum);
 
-            n.setText(friends.get(friendIndex)[0]);
-            s.setText(friends.get(friendIndex)[1]);
-//            n.setText("adsd");
-//            s.setText("adsd");
 
-            items.addView(child);
-        }
-
-        else{
-            View child = items.getChildAt(friendIndex);
-            TextView n = (TextView) child.findViewById(R.id.name);
-            TextView s = (TextView) child.findViewById(R.id.sum);
-
-            n.setText(friends.get(friendIndex)[0]);
-            s.setText(friends.get(friendIndex)[1]);
-        }
-
-        Log.d("Ben","add friend");
-        Log.d("Ben","size: "+friends.size());
-        Log.d("Ben","size items: "+items.getChildCount());
-    }
-
-    ArrayList<String[]> friends = new ArrayList<String[]>();
-
+    /**
+     * add an item to main screen, when pop-up closed.
+     * @param names
+     * @param description
+     * @param amount
+     * @param price
+     */
     private void addItem(ArrayList<String> names,String description , String amount, String price){
         LinearLayout items = (LinearLayout) findViewById(R.id.itemContainer);
 
@@ -485,7 +494,6 @@ public class MainActivity extends AppCompatActivity {
             itmnm.addView(na);
         }
 
-
         s.setText(description);
         t.setText(amount);
         fo.setText(price);
@@ -498,22 +506,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * main screen button to add item. open the pop-up.
+     * @param view
+     */
     public void addItem(View view){
-        // create alert dialog
-        // show it
 
         namesforList = new ArrayList<String>();
         for(int i=0; i<friends.size(); i++)
             namesforList.add(friends.get(i)[0]);
 
-        alertDialogBuilder.show();
+        bulidPopUp();
 
+        alertDialogBuilder.show();
         dropdown();
     }
 
 
+    /**
+     * change the main frame.
+     * @param summ true if switch to summary, false if swith to home screen
+     */
+    protected void changePage(boolean summ){
+        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
+        if(summ){
+            try {
+                frame.removeView(homepage);
+                frame.addView(summarypage);
+            }catch (Exception e){}
+        }
+        if(!summ){
+            try{
+                frame.removeView(summarypage);
+                frame.addView(homepage);
+            }catch (Exception e){}
+        }
+    }
+
+
+
+
     View summarypage =null;
     View homepage =null;
+
+    /**
+     * build the Summary frame and homepage frame. only on create
+     */
     protected void bulidPage(){
         if(summarypage == null) {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -526,23 +564,13 @@ public class MainActivity extends AppCompatActivity {
                     (ViewGroup) findViewById(R.id.additemid));
         }
     }
-    protected void changePage(boolean summ){
-        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
-        if(summ){
-            try {
-                frame.removeView(homepage);
-                frame.addView(summarypage);
-            }catch (Exception e){}
-        }
-        if(!summ){
-            try{
-            frame.removeView(summarypage);
-            frame.addView(homepage);
-            }catch (Exception e){}
-        }
-    }
 
-    public void dd() {
+
+
+    /**
+     * resize navigation icons size
+     */
+    public void resizeIcons() {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
         BottomNavigationMenuView menuView = (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
         for (int i = 0; i < menuView.getChildCount(); i++) {
@@ -556,55 +584,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-//    View summarypage =null;
-//    protected void DachClick() {
-//
-//        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
-//        removeOld(frame);
-//
-//        if(summarypage == null) {
-//            LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-//            summarypage = inflater.inflate(R.layout.summary,
-//                    (ViewGroup) findViewById(R.id.summaryid));
-//        }
-//        frame.addView(summarypage);
-//    }
-//
-//    View homepage =null;
-//    protected void HomeClick() {
-//        FrameLayout frame = (FrameLayout) findViewById(R.id.content);
-//        removeOld(frame);
-//
-//        LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
-//
-//        if(homepage == null) {
-//            homepage = inflater.inflate(R.layout.additem,
-//                    (ViewGroup) findViewById(R.id.additemid));
-//        }
-//        frame.addView(homepage);
-//    }
-//
-//    /**
-//     * remove old child from main frame
-//     * @param frame
-//     */
-//    private void removeOld(FrameLayout frame){
-//        try{
-//            LayoutInflater oldinflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
-//            View oldchildLayout = oldinflater.inflate(R.layout.summary,
-//                    (ViewGroup) findViewById(R.id.summaryid));
-//            frame.removeView(oldchildLayout);
-//        }catch(Exception e){}
-//
-//        try {
-//            LayoutInflater oldinflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-//            View oldchildLayout = oldinflater.inflate(R.layout.additem,
-//                    (ViewGroup) findViewById(R.id.additemid));
-//            frame.removeView(oldchildLayout);
-//        }catch(Exception e){}
-//
-//    }
 
 
 }
