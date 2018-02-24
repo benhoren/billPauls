@@ -24,6 +24,6 @@
         android:layout_gravity="bottom|end"
         android:onClick="addItem"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/ic_action_add" />
 
 </android.support.design.widget.CoordinatorLayout>

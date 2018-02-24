@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -26,6 +26,7 @@
     <style name="titlesstyle">
         <item name="android:textColor">@color/textcolor</item>
         <item name="android:fontFamily">@font/vintageavalancheblack</item>
+        <item name="android:textSize">21sp</item>
     </style>
 
     <style name="fieldstyle">

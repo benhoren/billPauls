@@ -51,15 +51,15 @@ android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/button"
-                style="@android:style/Widget.ImageButton"
+                style="@android:style/Widget.Holo.ImageButton"
                 android:layout_width="70dp"
-                android:layout_height="44dp"
+                android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
+                android:layout_marginTop="7dp"
                 android:adjustViewBounds="true"
                 android:background="@android:color/transparent"
                 android:onClick="addTinyName"
-
                 android:scaleType="centerCrop"
                 android:src="@drawable/addname" />
 
