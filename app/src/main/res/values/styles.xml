@@ -8,22 +8,39 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <style name="textstyle">
-       <item name="android:textColor">#e6e6e6</item>
+       <item name="android:textColor">@color/textcolor</item>
+        <item name="android:fontFamily">@font/vintageavalanche</item>
     </style>
-    <!--<item name="android:textSize"18dp></item>-->
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="titlesstyle">
+        <item name="android:textColor">@color/textcolor</item>
+        <item name="android:fontFamily">@font/vintageavalancheblack</item>
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="fieldstyle">
+        <item name="android:textColor">@color/textcolor</item>
+        <item name="android:textColorHint">#7f7f7f</item>
+    </style>
+
+
+
+    <style name="tinynameframe">
+        <!--<item name="android:background">#666666</item>-->
+    </style>
 
     <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@drawable/popupback</item>
+        <item name="android:background">#4d4d4d</item>
     </style>
 
 </resources>

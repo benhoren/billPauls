@@ -22,7 +22,7 @@
 
 
             <TextView
-                style="@style/textstyle"
+                style="@style/titlesstyle"
                 android:id="@+id/textView24"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
                 app:layout_constraintGuide_begin="20dp" />
 
             <TextView
-                style="@style/textstyle"
+                style="@style/titlesstyle"
                 android:id="@+id/textView26"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
                 app:layout_constraintVertical_bias="0.526" />
 
             <TextView
-                style="@style/textstyle"
+                style="@style/titlesstyle"
                 android:id="@+id/textView27"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
 
             <TextView
                 android:id="@+id/textView28"
-                style="@style/textstyle"
+                style="@style/titlesstyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"

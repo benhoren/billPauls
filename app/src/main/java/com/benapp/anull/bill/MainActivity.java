@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -28,6 +29,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -84,13 +86,17 @@ public class MainActivity extends AppCompatActivity {
     View popup =null;
     protected void popupcreate() {
 
-        LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
+//        LayoutInflater inflater = (LayoutInflater)    this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
         if(popup == null) {
-            popup = inflater.inflate(R.layout.popup,
-                    (ViewGroup) findViewById(R.id.popupid));
+            popup = getLayoutInflater().inflate(R.layout.popup, null);
+            popup = popup.findViewById(R.id.popupid);
+
+//            popup = inflater.inflate(R.layout.popup,
+//                    (ViewGroup) findViewById(R.id.popupid));
         }
     }
+
 
 
 
@@ -99,10 +105,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void bulidAlertOne(){
-        alertDialogBuilder = new AlertDialog.Builder(this)
+        alertDialogBuilder = new AlertDialog.Builder(this ,R.style.MyDialogTheme)
                 .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
+
+
+
+        poptpLayout = new LinearLayout(this);
+        alertDialogBuilder.setView(poptpLayout);
+
 
 
         alertDialogBuilder.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -141,13 +153,13 @@ public class MainActivity extends AppCompatActivity {
 
                         try{
                             Double.parseDouble(a);
-                            ((EditText)poptpLayout.findViewById(R.id.Amount)).setTextColor(Color.BLACK);
+                            ((EditText)poptpLayout.findViewById(R.id.Amount)).setTextColor(getResources().getColor(R.color.textcolor));
                         } catch (Exception e){ok=false;
                             ((EditText)poptpLayout.findViewById(R.id.Amount)).setTextColor(Color.RED);}
 
                         try{
                             Double.parseDouble(p);
-                            ((EditText)poptpLayout.findViewById(R.id.Price)).setTextColor(Color.BLACK);
+                            ((EditText)poptpLayout.findViewById(R.id.Price)).setTextColor(getResources().getColor(R.color.textcolor));
                         } catch (Exception e){ok=false;
                             ((EditText)poptpLayout.findViewById(R.id.Price)).setTextColor(Color.RED);}
 
@@ -178,18 +190,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void bulidPopUp(){
 
-        poptpLayout = new LinearLayout(this);
-
-
-
+        poptpLayout.removeView(popup);
+        popup=null;
         popupcreate();
-        LayoutInflater inflater = (LayoutInflater)      this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        final View popup = inflater.inflate(R.layout.popup,
-                    (ViewGroup) findViewById(R.id.popupid));
         poptpLayout.addView(popup);
 
-
-        alertDialogBuilder.setView(poptpLayout);
         dropdown();
 
         final EditText a = (EditText)poptpLayout.findViewById(R.id.Amount);
@@ -202,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 try{
                     Double.parseDouble(a.getText().toString().trim());
-                    a.setTextColor(Color.BLACK);
+                    a.setTextColor(getResources().getColor(R.color.textcolor));
                 } catch (Exception e){
                     a.setTextColor(Color.RED);}
             }
@@ -216,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 try{
                     Double.parseDouble(p.getText().toString().trim());
-                    p.setTextColor(Color.BLACK);
+                    p.setTextColor(getResources().getColor(R.color.textcolor));
                 } catch (Exception e){
                     p.setTextColor(Color.RED);}
             }
@@ -329,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
 
             ((EditText) poptpLayout.findViewById(R.id.Name)).setText("");
             TextView fo = (TextView) child.findViewById(R.id.textView);
+            fo.setTextColor(getResources().getColor(R.color.textcolor));
             fo.setText(n);
 
             for (int i = 0; i < namesforList.size(); i++) {
@@ -352,7 +358,22 @@ public class MainActivity extends AppCompatActivity {
     public void addTinyName(View view){
         LinearLayout items = (LinearLayout) poptpLayout.findViewById(R.id.tinynames);
 
-        View child = getLayoutInflater().inflate(R.layout.tinyname, null);
+        FrameLayout child = (FrameLayout)getLayoutInflater().inflate(R.layout.tinyname, null);
+
+
+
+
+//        ImageView IM = child.findViewById(R.id.backpic);
+//        IM.getLayoutParams().height = child.getHeight();
+//        IM.getLayoutParams().width = child.getWidth();
+//        IM.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.rectangle));
+//        ImageView iv = new ImageView(getApplicationContext());
+//        iv.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.rectangle));
+//        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams (child.getWidth(), child.getHeight());
+//        iv.setLayoutParams(lp);
+//        child.addView(iv);
+
+
 
         String n = ((EditText)poptpLayout.findViewById(R.id.Name)).getText().toString();
         n=n.trim();
@@ -378,6 +399,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             items.addView(child);
+
+            Log.d("Ben", "HEREREE");
+
+
         }
     }
     /**
@@ -487,6 +512,10 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i=1; i<names.size(); i++){
            TextView na = new TextView(this);
+
+            na.setTextAppearance(this, R.style.textstyle);
+
+
             na.setText(", "+names.get(i));
             na.setTextSize(18);
 
