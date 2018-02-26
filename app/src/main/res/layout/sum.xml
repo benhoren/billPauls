@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    android:id="@+id/totalBill"
+<FrameLayout android:id="@+id/totalBill"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
 
@@ -56,13 +56,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/serv"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:onClick="servRate"
+                android:src="@drawable/ic_action_sentiment_satisfied"
+                android:tint="@color/textcolor" />
+
+
             <TextView
                 style="@style/titlesstyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="59dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="53dp"
                 android:text="Tip" />
 
             <TextView
@@ -72,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="50dp"
+                android:layout_marginEnd="52dp"
                 android:text="TextView" />
         </RelativeLayout>
 

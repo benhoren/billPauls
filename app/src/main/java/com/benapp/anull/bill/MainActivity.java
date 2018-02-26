@@ -2,17 +2,17 @@ package com.benapp.anull.bill;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -22,7 +22,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -34,9 +34,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 //        DachClick();
 //        HomeClick();
         resizeIcons();
@@ -92,12 +96,45 @@ public class MainActivity extends AppCompatActivity {
             popup = getLayoutInflater().inflate(R.layout.popup, null);
             popup = popup.findViewById(R.id.popupid);
 
+            //        LayoutInflater inflater = (LayoutInflater)    this.getSystemService(LAYOUT_INFLATER_SERVICE);
 //            popup = inflater.inflate(R.layout.popup,
 //                    (ViewGroup) findViewById(R.id.popupid));
         }
     }
 
 
+    int service =10;
+    public void servRate(View view){
+
+        ImageView button = (ImageView) view;
+
+        switch (service){
+            case 10:
+                service =15;
+                button.setImageResource(R.drawable.ic_action_sentiment_neutral);
+                break;
+
+            case 15:
+                service =20;
+                button.setImageResource(R.drawable.ic_action_sentiment_satisfied);
+                break;
+
+            case 20:
+                service =10;
+                button.setImageResource(R.drawable.ic_action_sentiment_dissatisfied);
+                break;
+        }
+
+        double sum = 0;
+        for(int i=0; i<friends.size(); i++){
+            sum+=Double.parseDouble(friends.get(i)[1]);
+        }
+
+        TextView tipview = (TextView) total.findViewById(R.id.tip);
+        int tip = (int)(sum * ( (double)service/100.0)) ;
+        tipview.setText(tip+"");
+
+    }
 
 
     LinearLayout poptpLayout = null;
@@ -150,9 +187,11 @@ public class MainActivity extends AppCompatActivity {
                         if(names.size()==0)
                             ok=false;
 
+                        if(a.isEmpty())
+                            a="1";
 
                         try{
-                            Double.parseDouble(a);
+                            Integer.parseInt(a);
                             ((EditText)poptpLayout.findViewById(R.id.Amount)).setTextColor(getResources().getColor(R.color.textcolor));
                         } catch (Exception e){ok=false;
                             ((EditText)poptpLayout.findViewById(R.id.Amount)).setTextColor(Color.RED);}
@@ -206,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void afterTextChanged(Editable s) {
                 try{
-                    Double.parseDouble(a.getText().toString().trim());
+                    Integer.parseInt(a.getText().toString().trim());
                     a.setTextColor(getResources().getColor(R.color.textcolor));
                 } catch (Exception e){
                     a.setTextColor(Color.RED);}
@@ -360,21 +399,6 @@ public class MainActivity extends AppCompatActivity {
 
         FrameLayout child = (FrameLayout)getLayoutInflater().inflate(R.layout.tinyname, null);
 
-
-
-
-//        ImageView IM = child.findViewById(R.id.backpic);
-//        IM.getLayoutParams().height = child.getHeight();
-//        IM.getLayoutParams().width = child.getWidth();
-//        IM.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.rectangle));
-//        ImageView iv = new ImageView(getApplicationContext());
-//        iv.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.rectangle));
-//        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams (child.getWidth(), child.getHeight());
-//        iv.setLayoutParams(lp);
-//        child.addView(iv);
-
-
-
         String n = ((EditText)poptpLayout.findViewById(R.id.Name)).getText().toString();
         n=n.trim();
         boolean newname = true;
@@ -399,8 +423,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             items.addView(child);
-
-            Log.d("Ben", "HEREREE");
 
 
         }
@@ -471,23 +493,72 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout items = (LinearLayout) summarypage.findViewById(R.id.friendsContainer);
 
         items.removeAllViews();
-
+        double p=0;
+        String _p="";
+        double sum = 0;
         for(int i=0 ; i<friends.size(); i++){
+            _p="";
+            p=0;
             View child = getLayoutInflater().inflate(R.layout.friend, null);
 
             TextView n = (TextView) child.findViewById(R.id.name);
             TextView s = (TextView) child.findViewById(R.id.sum);
 
             n.setText(friends.get(i)[0]);
-            s.setText(friends.get(i)[1]);
+
+             p = Double.parseDouble(friends.get(i)[1]);
+             sum += p;
+            if(p!= (int)p){
+                p=p*10;
+                p = (int) p;
+                p = p/10;
+                _p = "0";
+            }
+            _p = p + _p;
+
+            s.setText(_p);
+
 
             items.addView(child);
         }
+
+
+        if(total == null) {
+            View sumlay = getLayoutInflater().inflate(R.layout.sum, null);
+            total = sumlay.findViewById(R.id.totalBill);
+        }
+
+        TextView sumview = (TextView) total.findViewById(R.id.friendsum);
+        sumview.setText(sum+"");
+
+        TextView tipview = (TextView) total.findViewById(R.id.tip);
+        int tip = (int)(sum * ( (double)service/100.0)) ;
+        tipview.setText(tip+"");
+
+        items.addView(total);
+
+//        total.setOnTouchListener(new OnSwipeTouchListener(this) {
+//            @Override
+//            public void onSwipeLeft() {
+//                // Whatever
+//            }
+//        });
 
     }
 
 
 
+    FrameLayout total ;
+
+
+
+    public static Bitmap getBitmapFromView(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bitmap);
+        view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+        view.draw(c);
+        return bitmap;
+    }
 
 
     /**
@@ -500,13 +571,24 @@ public class MainActivity extends AppCompatActivity {
     private void addItem(ArrayList<String> names,String description , String amount, String price){
         LinearLayout items = (LinearLayout) findViewById(R.id.itemContainer);
 
-        View child = getLayoutInflater().inflate(R.layout.nitem, null);
+        View child = getLayoutInflater().inflate(R.layout.item, null);
 
         TextView f = (TextView) child.findViewById(R.id.first);
         TextView s = (TextView) child.findViewById(R.id.second);
         TextView t = (TextView) child.findViewById(R.id.third);
         TextView fo = (TextView) child.findViewById(R.id.four);
         String name="";
+
+
+        child.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View v) {
+
+
+                return true;
+            }
+        });
+
 
         f.setText(names.get(0));
 
@@ -532,6 +614,12 @@ public class MainActivity extends AppCompatActivity {
         items.addView(child);
 //        Log.d("Ben","add item");
 //        Log.d("Ben","size: "+count);
+
+
+
+
+
+
     }
 
 
@@ -610,9 +698,255 @@ public class MainActivity extends AppCompatActivity {
             layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 42, displayMetrics);
             iconView.setLayoutParams(layoutParams);
         }
+//        final View iconView = menuView.getChildAt(2).findViewById(android.support.design.R.id.icon);
+//        final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
+//        final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+//        layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 43, displayMetrics);
+//        layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 43, displayMetrics);
+//        iconView.setLayoutParams(layoutParams);
     }
 
 
 
 
+
+
+
+
+    /**
+     * Stack Blur v1.0 from
+     * http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
+     * Java Author: Mario Klingemann <mario at quasimondo.com>
+     * http://incubator.quasimondo.com
+     *
+     * created Feburary 29, 2004
+     * Android port : Yahel Bouaziz <yahel at kayenko.com>
+     * http://www.kayenko.com
+     * ported april 5th, 2012
+     *
+     * This is a compromise between Gaussian Blur and Box blur
+     * It creates much better looking blurs than Box Blur, but is
+     * 7x faster than my Gaussian Blur implementation.
+     *
+     * I called it Stack Blur because this describes best how this
+     * filter works internally: it creates a kind of moving stack
+     * of colors whilst scanning through the image. Thereby it
+     * just has to add one new block of color to the right side
+     * of the stack and remove the leftmost color. The remaining
+     * colors on the topmost layer of the stack are either added on
+     * or reduced by one, depending on if they are on the right or
+     * on the left side of the stack.
+     *
+     * If you are using this algorithm in your code please add
+     * the following line:
+     * Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
+     */
+
+    public Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) {
+
+        int width = Math.round(sentBitmap.getWidth() * scale);
+        int height = Math.round(sentBitmap.getHeight() * scale);
+        sentBitmap = Bitmap.createScaledBitmap(sentBitmap, width, height, false);
+
+        Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+
+        if (radius < 1) {
+            return (null);
+        }
+
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        int[] pix = new int[w * h];
+        Log.e("pix", w + " " + h + " " + pix.length);
+        bitmap.getPixels(pix, 0, w, 0, 0, w, h);
+
+        int wm = w - 1;
+        int hm = h - 1;
+        int wh = w * h;
+        int div = radius + radius + 1;
+
+        int r[] = new int[wh];
+        int g[] = new int[wh];
+        int b[] = new int[wh];
+        int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
+        int vmin[] = new int[Math.max(w, h)];
+
+        int divsum = (div + 1) >> 1;
+        divsum *= divsum;
+        int dv[] = new int[256 * divsum];
+        for (i = 0; i < 256 * divsum; i++) {
+            dv[i] = (i / divsum);
+        }
+
+        yw = yi = 0;
+
+        int[][] stack = new int[div][3];
+        int stackpointer;
+        int stackstart;
+        int[] sir;
+        int rbs;
+        int r1 = radius + 1;
+        int routsum, goutsum, boutsum;
+        int rinsum, ginsum, binsum;
+
+        for (y = 0; y < h; y++) {
+            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+            for (i = -radius; i <= radius; i++) {
+                p = pix[yi + Math.min(wm, Math.max(i, 0))];
+                sir = stack[i + radius];
+                sir[0] = (p & 0xff0000) >> 16;
+                sir[1] = (p & 0x00ff00) >> 8;
+                sir[2] = (p & 0x0000ff);
+                rbs = r1 - Math.abs(i);
+                rsum += sir[0] * rbs;
+                gsum += sir[1] * rbs;
+                bsum += sir[2] * rbs;
+                if (i > 0) {
+                    rinsum += sir[0];
+                    ginsum += sir[1];
+                    binsum += sir[2];
+                } else {
+                    routsum += sir[0];
+                    goutsum += sir[1];
+                    boutsum += sir[2];
+                }
+            }
+            stackpointer = radius;
+
+            for (x = 0; x < w; x++) {
+
+                r[yi] = dv[rsum];
+                g[yi] = dv[gsum];
+                b[yi] = dv[bsum];
+
+                rsum -= routsum;
+                gsum -= goutsum;
+                bsum -= boutsum;
+
+                stackstart = stackpointer - radius + div;
+                sir = stack[stackstart % div];
+
+                routsum -= sir[0];
+                goutsum -= sir[1];
+                boutsum -= sir[2];
+
+                if (y == 0) {
+                    vmin[x] = Math.min(x + radius + 1, wm);
+                }
+                p = pix[yw + vmin[x]];
+
+                sir[0] = (p & 0xff0000) >> 16;
+                sir[1] = (p & 0x00ff00) >> 8;
+                sir[2] = (p & 0x0000ff);
+
+                rinsum += sir[0];
+                ginsum += sir[1];
+                binsum += sir[2];
+
+                rsum += rinsum;
+                gsum += ginsum;
+                bsum += binsum;
+
+                stackpointer = (stackpointer + 1) % div;
+                sir = stack[(stackpointer) % div];
+
+                routsum += sir[0];
+                goutsum += sir[1];
+                boutsum += sir[2];
+
+                rinsum -= sir[0];
+                ginsum -= sir[1];
+                binsum -= sir[2];
+
+                yi++;
+            }
+            yw += w;
+        }
+        for (x = 0; x < w; x++) {
+            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+            yp = -radius * w;
+            for (i = -radius; i <= radius; i++) {
+                yi = Math.max(0, yp) + x;
+
+                sir = stack[i + radius];
+
+                sir[0] = r[yi];
+                sir[1] = g[yi];
+                sir[2] = b[yi];
+
+                rbs = r1 - Math.abs(i);
+
+                rsum += r[yi] * rbs;
+                gsum += g[yi] * rbs;
+                bsum += b[yi] * rbs;
+
+                if (i > 0) {
+                    rinsum += sir[0];
+                    ginsum += sir[1];
+                    binsum += sir[2];
+                } else {
+                    routsum += sir[0];
+                    goutsum += sir[1];
+                    boutsum += sir[2];
+                }
+
+                if (i < hm) {
+                    yp += w;
+                }
+            }
+            yi = x;
+            stackpointer = radius;
+            for (y = 0; y < h; y++) {
+                // Preserve alpha channel: ( 0xff000000 & pix[yi] )
+                pix[yi] = ( 0xff000000 & pix[yi] ) | ( dv[rsum] << 16 ) | ( dv[gsum] << 8 ) | dv[bsum];
+
+                rsum -= routsum;
+                gsum -= goutsum;
+                bsum -= boutsum;
+
+                stackstart = stackpointer - radius + div;
+                sir = stack[stackstart % div];
+
+                routsum -= sir[0];
+                goutsum -= sir[1];
+                boutsum -= sir[2];
+
+                if (x == 0) {
+                    vmin[y] = Math.min(y + r1, hm) * w;
+                }
+                p = x + vmin[y];
+
+                sir[0] = r[p];
+                sir[1] = g[p];
+                sir[2] = b[p];
+
+                rinsum += sir[0];
+                ginsum += sir[1];
+                binsum += sir[2];
+
+                rsum += rinsum;
+                gsum += ginsum;
+                bsum += binsum;
+
+                stackpointer = (stackpointer + 1) % div;
+                sir = stack[stackpointer];
+
+                routsum += sir[0];
+                goutsum += sir[1];
+                boutsum += sir[2];
+
+                rinsum -= sir[0];
+                ginsum -= sir[1];
+                binsum -= sir[2];
+
+                yi += w;
+            }
+        }
+
+        Log.e("pix", w + " " + h + " " + pix.length);
+        bitmap.setPixels(pix, 0, w, 0, 0, w, h);
+
+        return (bitmap);
+    }
 }
