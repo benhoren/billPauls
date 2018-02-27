@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    int service =10;
+    int service =20;
     public void servRate(View view){
 
         ImageView button = (ImageView) view;
