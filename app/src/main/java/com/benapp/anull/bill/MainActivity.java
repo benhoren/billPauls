@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -104,24 +105,36 @@ public class MainActivity extends AppCompatActivity {
 
 
     int service =20;
+    Toast mToast;
     public void servRate(View view){
 
         ImageView button = (ImageView) view;
+
+        if(mToast == null) {
+            mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        }
+
 
         switch (service){
             case 10:
                 service =15;
                 button.setImageResource(R.drawable.ic_action_sentiment_neutral);
+                mToast.setText("15%");
+                mToast.show();
                 break;
 
             case 15:
                 service =20;
                 button.setImageResource(R.drawable.ic_action_sentiment_satisfied);
+                mToast.setText("20%");
+                mToast.show();
                 break;
 
             case 20:
                 service =10;
                 button.setImageResource(R.drawable.ic_action_sentiment_dissatisfied);
+                mToast.setText("10%");
+                mToast.show();
                 break;
         }
 

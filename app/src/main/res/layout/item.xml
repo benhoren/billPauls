@@ -75,7 +75,7 @@
             android:textAlignment="textStart"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/four"
-            app:layout_constraintHorizontal_bias="0.85"
+            app:layout_constraintHorizontal_bias="0.91"
             app:layout_constraintStart_toStartOf="@+id/frameLayout" />
 
 
